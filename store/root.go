@@ -5,9 +5,9 @@ import (
 	"math"
 	"sync"
 
-	"github.com/smartbch/moeingads"
-	"github.com/smartbch/moeingads/store/types"
-	adstypes "github.com/smartbch/moeingads/types"
+	"github.com/zeniqsmart/moeingads"
+	"github.com/zeniqsmart/moeingads/store/types"
+	adstypes "github.com/zeniqsmart/moeingads/types"
 )
 
 const (

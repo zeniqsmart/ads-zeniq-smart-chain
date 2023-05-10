@@ -14,10 +14,10 @@ import (
 	//"github.com/dterei/gotsc"
 	sha256 "github.com/minio/sha256-simd"
 
-	"github.com/smartbch/moeingads/datatree"
-	"github.com/smartbch/moeingads/indextree"
-	"github.com/smartbch/moeingads/metadb"
-	"github.com/smartbch/moeingads/types"
+	"github.com/zeniqsmart/moeingads/datatree"
+	"github.com/zeniqsmart/moeingads/indextree"
+	"github.com/zeniqsmart/moeingads/metadb"
+	"github.com/zeniqsmart/moeingads/types"
 )
 
 const (

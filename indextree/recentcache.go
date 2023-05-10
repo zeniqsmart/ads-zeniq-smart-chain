@@ -1,7 +1,7 @@
 package indextree
 
 import (
-	"github.com/smartbch/moeingads/types"
+	"github.com/zeniqsmart/moeingads/types"
 )
 
 type Cache struct {

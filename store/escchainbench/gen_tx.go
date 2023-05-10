@@ -13,7 +13,7 @@ import (
 	sha256 "github.com/minio/sha256-simd"
 	"github.com/mmcloughlin/meow"
 
-	"github.com/smartbch/moeingads/store/rabbit"
+	"github.com/zeniqsmart/moeingads/store/rabbit"
 )
 
 const (

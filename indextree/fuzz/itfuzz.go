@@ -9,8 +9,8 @@ import (
 
 	"github.com/coinexchain/randsrc"
 
-	it "github.com/smartbch/moeingads/indextree"
-	"github.com/smartbch/moeingads/types"
+	it "github.com/zeniqsmart/moeingads/indextree"
+	"github.com/zeniqsmart/moeingads/types"
 )
 
 func runTest(cfg FuzzConfig) {

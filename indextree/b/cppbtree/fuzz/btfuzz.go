@@ -8,7 +8,7 @@ import (
 
 	"github.com/coinexchain/randsrc"
 
-	cb "github.com/smartbch/moeingads/indextree/b/cppbtree"
+	cb "github.com/zeniqsmart/moeingads/indextree/b/cppbtree"
 )
 
 func runTest(cfg FuzzConfig) {

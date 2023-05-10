@@ -7,8 +7,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/smartbch/moeingads"
-	"github.com/smartbch/moeingads/store/types"
+	"github.com/zeniqsmart/moeingads"
+	"github.com/zeniqsmart/moeingads/store/types"
 )
 
 type Coord struct {

@@ -12,11 +12,11 @@ import (
 
 	"github.com/coinexchain/randsrc"
 
-	"github.com/smartbch/moeingads"
-	it "github.com/smartbch/moeingads/indextree"
-	"github.com/smartbch/moeingads/store"
-	"github.com/smartbch/moeingads/store/rabbit"
-	"github.com/smartbch/moeingads/types"
+	"github.com/zeniqsmart/moeingads"
+	it "github.com/zeniqsmart/moeingads/indextree"
+	"github.com/zeniqsmart/moeingads/store"
+	"github.com/zeniqsmart/moeingads/store/rabbit"
+	"github.com/zeniqsmart/moeingads/types"
 )
 
 type FuzzConfig struct {

@@ -4,7 +4,7 @@
 package moeingads
 
 import (
-	"github.com/smartbch/moeingads/datatree"
+	"github.com/zeniqsmart/moeingads/datatree"
 )
 
 const (

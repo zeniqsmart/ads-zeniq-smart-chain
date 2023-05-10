@@ -16,11 +16,11 @@ import (
 	"github.com/dterei/gotsc"
 	sha256 "github.com/minio/sha256-simd"
 
-	"github.com/smartbch/moeingads"
-	"github.com/smartbch/moeingads/datatree"
-	"github.com/smartbch/moeingads/store"
-	"github.com/smartbch/moeingads/store/rabbit"
-	"github.com/smartbch/moeingads/store/types"
+	"github.com/zeniqsmart/moeingads"
+	"github.com/zeniqsmart/moeingads/datatree"
+	"github.com/zeniqsmart/moeingads/store"
+	"github.com/zeniqsmart/moeingads/store/rabbit"
+	"github.com/zeniqsmart/moeingads/store/types"
 )
 
 var (
@@ -46,7 +46,7 @@ const (
 	//NumNewAccountsPerWorker = NumNewAccountsInBlock / NumWorkersInBlock
 )
 
-//var Phase1Time, Phase2Time, Phase3Time uint64
+// var Phase1Time, Phase2Time, Phase3Time uint64
 var tscOverhead uint64 //nolint:unused
 
 // convert coin type as an integer to short id using sha256

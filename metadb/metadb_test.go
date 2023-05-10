@@ -6,8 +6,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/smartbch/moeingads/datatree"
-	"github.com/smartbch/moeingads/indextree"
+	"github.com/zeniqsmart/moeingads/datatree"
+	"github.com/zeniqsmart/moeingads/indextree"
 )
 
 func TestMetaDB(t *testing.T) {

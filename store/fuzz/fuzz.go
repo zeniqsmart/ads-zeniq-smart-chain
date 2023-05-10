@@ -10,14 +10,14 @@ import (
 
 	"github.com/coinexchain/randsrc"
 
-	"github.com/smartbch/moeingads"
-	"github.com/smartbch/moeingads/datatree"
-	"github.com/smartbch/moeingads/store"
-	"github.com/smartbch/moeingads/store/rabbit"
-	storetypes "github.com/smartbch/moeingads/store/types"
+	"github.com/zeniqsmart/moeingads"
+	"github.com/zeniqsmart/moeingads/datatree"
+	"github.com/zeniqsmart/moeingads/store"
+	"github.com/zeniqsmart/moeingads/store/rabbit"
+	storetypes "github.com/zeniqsmart/moeingads/store/types"
 )
 
-// go test -tags debug -c -coverpkg github.com/smartbch/moeingads/... .
+// go test -tags debug -c -coverpkg github.com/zeniqsmart/moeingads/... .
 // RANDFILE=~/Downloads/goland-2019.1.3.dmg RANDCOUNT=2000 ./fuzz.test -test.coverprofile a.out
 
 func allTests() {

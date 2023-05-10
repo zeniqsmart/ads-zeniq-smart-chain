@@ -15,10 +15,10 @@ import (
 	sha256 "github.com/minio/sha256-simd"
 	//"github.com/pkg/profile"
 
-	"github.com/smartbch/moeingads"
-	"github.com/smartbch/moeingads/datatree"
-	"github.com/smartbch/moeingads/store"
-	"github.com/smartbch/moeingads/store/rabbit"
+	"github.com/zeniqsmart/moeingads"
+	"github.com/zeniqsmart/moeingads/datatree"
+	"github.com/zeniqsmart/moeingads/store"
+	"github.com/zeniqsmart/moeingads/store/rabbit"
 )
 
 const (
