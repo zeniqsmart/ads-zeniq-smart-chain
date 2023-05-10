@@ -1,0 +1,67 @@
+# https://github.com/mvdan/github-actions-golang
+name: CI
+
+# Controls when the action will run.
+on:
+  # Triggers the workflow on push or pull request events but only for the main branch
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        go: [1.18.x]
+        os: [ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Install Dependencies
+        run: |
+          sudo apt install gcc-8 g++-8
+          sudo apt install libgflags-dev zlib1g-dev libbz2-dev liblz4-dev libzstd-dev
+          sudo apt install libsnappy-dev
+
+      - name: Cache rocksdb
+        id: cache-rocksdb
+        uses: actions/cache@v2
+        with:
+          path: rocksdb-5.18.4
+          key: ${{ runner.os }}-rocksdb-5.18.4-static
+
+      - name: Build rocksdb
+        if: steps.cache-rocksdb.outputs.cache-hit != 'true'
+        run: |
+          wget https://github.com/facebook/rocksdb/archive/refs/tags/v5.18.4.tar.gz
+          tar zxvf v5.18.4.tar.gz
+          cd rocksdb-5.18.4
+          make CC=gcc-8 CXX=g++-8 static_lib
+
+      - name: Setup go
+        uses: actions/setup-go@v2
+        with:
+          go-version: ${{ matrix.go }}
+
+      - uses: actions/cache@v2
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-18
+
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          path: moeingads
+
+      - name: Build & Test
+        run: |
+          export ROCKSDB_PATH="$PWD/rocksdb-5.18.4"
+          export CGO_CFLAGS="-I$ROCKSDB_PATH/include"
+          export CGO_LDFLAGS="-L$ROCKSDB_PATH -lrocksdb -lstdc++ -lm -lz -lbz2 -lsnappy -llz4 -lzstd"
+          cd moeingads
+          curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.45.2
+          /home/runner/go/bin/golangci-lint run
+          go build -tags cppbtree ./...
+          go test -tags cppbtree ./...
