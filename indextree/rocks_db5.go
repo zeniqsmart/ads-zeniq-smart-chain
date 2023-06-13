@@ -7,7 +7,7 @@ import (
 	"bytes"
 	"encoding/binary"
 	"fmt"
-	"github.com/tecbot/gorocksdb"
+	"github.com/cosmos/gorocksdb"
 	"github.com/zeniqsmart/moeingads/types"
 	"path/filepath"
 	"runtime"
