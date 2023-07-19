@@ -7,8 +7,8 @@ import (
 	"bytes"
 	"encoding/binary"
 	"fmt"
-	rocks "github.com/linxGnu/grocksdb"
 	"github.com/zeniqsmart/moeingads/types"
+	"github.com/tecbot/gorocksdb"
 	"path/filepath"
 	"runtime"
 	"sync"
@@ -41,17 +41,11 @@ func (f *HeightCompactionFilter) Filter(level int, key, val []byte) (remove bool
 	}
 }
 
-func (f *HeightCompactionFilter) Destroy() {
-}
-
-func (f *HeightCompactionFilter) SetIgnoreSnapshots(ignore bool) {
-}
-
 type RocksDB struct {
-	db     *rocks.DB
-	ro     *rocks.ReadOptions
-	wo     *rocks.WriteOptions
-	woSync *rocks.WriteOptions
+	db     *gorocksdb.DB
+	ro     *gorocksdb.ReadOptions
+	wo     *gorocksdb.WriteOptions
+	woSync *gorocksdb.WriteOptions
 	filter *HeightCompactionFilter
 	batch  *rocksDBBatch
 	mtx    sync.Mutex
@@ -78,7 +72,7 @@ func (db *RocksDB) CloseOldBatch() {
 }
 
 func (db *RocksDB) OpenNewBatch() {
-	batch := rocks.NewWriteBatch()
+	batch := gorocksdb.NewWriteBatch()
 	db.batch = &rocksDBBatch{db, batch}
 }
 
@@ -86,11 +80,11 @@ func NewRocksDB(name string, dir string) (*RocksDB, error) {
 	// default rocksdb option, good enough for most cases, including heavy workloads.
 	// 64MB table cache, 32MB write buffer
 	// compression: snappy as default, need to -lsnappy to enable.
-	bbto := rocks.NewDefaultBlockBasedTableOptions()
-	bbto.SetBlockCache(rocks.NewLRUCache(64 * 1024 * 1024))
-	bbto.SetFilterPolicy(rocks.NewBloomFilter(10))
+	bbto := gorocksdb.NewDefaultBlockBasedTableOptions()
+	bbto.SetBlockCache(gorocksdb.NewLRUCache(64 * 1024 * 1024))
+	bbto.SetFilterPolicy(gorocksdb.NewBloomFilter(10))
 
-	opts := rocks.NewDefaultOptions()
+	opts := gorocksdb.NewDefaultOptions()
 	opts.SetBlockBasedTableFactory(bbto)
 	// SetMaxOpenFiles to 4096 seems to provide a reliable performance boost
 	opts.SetMaxOpenFiles(4096)
@@ -101,18 +95,18 @@ func NewRocksDB(name string, dir string) (*RocksDB, error) {
 	return NewRocksDBWithOptions(name, dir, opts)
 }
 
-func NewRocksDBWithOptions(name string, dir string, opts *rocks.Options) (*RocksDB, error) {
+func NewRocksDBWithOptions(name string, dir string, opts *gorocksdb.Options) (*RocksDB, error) {
 	dbPath := filepath.Join(dir, name+".db")
 	filter := HeightCompactionFilter{}
 	opts.SetCompactionFilter(&filter) // use a customized compaction filter
-	opts.SetCompression(rocks.NoCompression)
-	db, err := rocks.OpenDb(opts, dbPath)
+	opts.SetCompression(gorocksdb.NoCompression)
+	db, err := gorocksdb.OpenDb(opts, dbPath)
 	if err != nil {
 		return nil, err
 	}
-	ro := rocks.NewDefaultReadOptions()
-	wo := rocks.NewDefaultWriteOptions()
-	woSync := rocks.NewDefaultWriteOptions()
+	ro := gorocksdb.NewDefaultReadOptions()
+	wo := gorocksdb.NewDefaultWriteOptions()
+	woSync := gorocksdb.NewDefaultWriteOptions()
 	woSync.SetSync(true)
 	database := &RocksDB{
 		db:     db,
@@ -203,7 +197,7 @@ func (db *RocksDB) DeleteSync(key []byte) {
 	}
 }
 
-func (db *RocksDB) DB() *rocks.DB {
+func (db *RocksDB) DB() *gorocksdb.DB {
 	return db.db
 }
 
@@ -241,13 +235,13 @@ func (db *RocksDB) Stats() map[string]string {
 
 // Implements DB.
 func (db *RocksDB) NewBatch() types.Batch {
-	batch := rocks.NewWriteBatch()
+	batch := gorocksdb.NewWriteBatch()
 	return &rocksDBBatch{db, batch}
 }
 
 type rocksDBBatch struct {
 	db    *RocksDB
-	batch *rocks.WriteBatch
+	batch *gorocksdb.WriteBatch
 }
 
 // Implements Batch.
@@ -325,7 +319,7 @@ func (db *RocksDB) ReverseIterator(start, end []byte) types.Iterator {
 var _ types.Iterator = (*rocksDBIterator)(nil)
 
 type rocksDBIterator struct {
-	source     *rocks.Iterator
+	source     *gorocksdb.Iterator
 	start, end []byte
 	isReverse  bool
 	isInvalid  bool
@@ -333,7 +327,7 @@ type rocksDBIterator struct {
 
 var _ types.Iterator = (*rocksDBIterator)(nil)
 
-func newRocksDBIterator(source *rocks.Iterator, start, end []byte, isReverse bool) *rocksDBIterator {
+func newRocksDBIterator(source *gorocksdb.Iterator, start, end []byte, isReverse bool) *rocksDBIterator {
 	if isReverse {
 		if end == nil {
 			source.SeekToLast()
@@ -439,7 +433,7 @@ func (itr *rocksDBIterator) assertIsValid() {
 // moveSliceToBytes will free the slice and copy out a go []byte
 // This function can be applied on *Slice returned from Key() and Value()
 // of an Iterator, because they are marked as freed.
-func moveSliceToBytes(s *rocks.Slice) []byte {
+func moveSliceToBytes(s *gorocksdb.Slice) []byte {
 	defer s.Free()
 	if !s.Exists() {
 		return nil
