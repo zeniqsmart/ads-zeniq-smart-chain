@@ -141,6 +141,10 @@ func (ts *TrunkStore) GetCacheContent() map[string]string {
 	return ts.cache.m
 }
 
+func (ts *TrunkStore) SetCacheContent(m map[string]string) {
+	ts.cache = &CacheStore{m: m}
+}
+
 func SyncUpdateTo(m map[string]string, root types.RootStoreI) {
 	cache := &CacheStore{m: m}
 
