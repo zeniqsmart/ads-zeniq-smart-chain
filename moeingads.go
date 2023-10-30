@@ -33,6 +33,7 @@ const (
 )
 
 var Phase1n2Time, Phase1Time, Phase2Time, Phase3Time, Phase4Time, Phase0Time uint64
+var NewOverOldFile *os.File = nil
 
 type MoeingADS struct {
 	meta           types.MetaDB
@@ -433,6 +434,11 @@ func (mads *MoeingADS) Set(key, value []byte) {
 	if hotEntry == nil {
 		panic("Can not change or insert at a fake entry")
 	}
+
+	if NewOverOldFile != nil {
+		NewOverOldFile.Write([]byte(fmt.Sprintf("%x=%x/%x\n", key, value, hotEntry.EntryPtr.Value)))
+	}
+
 	hotEntry.EntryPtr.Value = value
 	hotEntry.Operation = types.OpInsertOrChange
 }
@@ -446,6 +452,11 @@ func (mads *MoeingADS) Delete(key []byte) {
 	if hotEntry == nil {
 		return // delete a non-exist kv pair
 	}
+
+	if NewOverOldFile != nil {
+		NewOverOldFile.Write([]byte(fmt.Sprintf("%x=/%x\n", key, hotEntry.EntryPtr.Value)))
+	}
+
 	hotEntry.Operation = types.OpDelete
 }
 
