@@ -6,8 +6,8 @@ import (
 
 	sha256 "github.com/minio/sha256-simd"
 
-	"github.com/zeniqsmart/moeingads/store/types"
-	adstypes "github.com/zeniqsmart/moeingads/types"
+	"github.com/zeniqsmart/ads-zeniq-smart-chain/store/types"
+	adstypes "github.com/zeniqsmart/ads-zeniq-smart-chain/types"
 )
 
 const (

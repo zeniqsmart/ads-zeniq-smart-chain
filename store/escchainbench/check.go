@@ -15,10 +15,10 @@ import (
 	sha256 "github.com/minio/sha256-simd"
 	//"github.com/pkg/profile"
 
-	"github.com/zeniqsmart/moeingads"
-	"github.com/zeniqsmart/moeingads/datatree"
-	"github.com/zeniqsmart/moeingads/store"
-	"github.com/zeniqsmart/moeingads/store/rabbit"
+	"github.com/zeniqsmart/ads-zeniq-smart-chain/ads"
+	"github.com/zeniqsmart/ads-zeniq-smart-chain/datatree"
+	"github.com/zeniqsmart/ads-zeniq-smart-chain/store"
+	"github.com/zeniqsmart/ads-zeniq-smart-chain/store/rabbit"
 )
 
 const (
@@ -157,7 +157,7 @@ func RunCheckAccounts(numAccounts int, randFilename string) {
 	defer f.Close()
 	runtime.GC()
 
-	mads, err := moeingads.NewMoeingADS("./moeingads4test", false, [][]byte{GuardStart, GuardEnd})
+	mads, err := ads.NewADS("./ads4test", false, [][]byte{GuardStart, GuardEnd})
 	if err != nil {
 		panic(err)
 	}

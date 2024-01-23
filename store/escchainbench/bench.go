@@ -5,7 +5,7 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/zeniqsmart/moeingads/datatree"
+	"github.com/zeniqsmart/ads-zeniq-smart-chain/datatree"
 )
 
 func printUsage() {

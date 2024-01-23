@@ -7,7 +7,7 @@ import (
 	"bytes"
 	"encoding/binary"
 	"fmt"
-	"github.com/zeniqsmart/moeingads/types"
+	"github.com/zeniqsmart/ads-zeniq-smart-chain/types"
 	"github.com/tecbot/gorocksdb"
 	"path/filepath"
 	"runtime"

@@ -13,10 +13,10 @@ import (
 	"github.com/mmcloughlin/meow"
 	//"github.com/pkg/profile"
 
-	"github.com/zeniqsmart/moeingads"
-	"github.com/zeniqsmart/moeingads/datatree"
-	"github.com/zeniqsmart/moeingads/store"
-	"github.com/zeniqsmart/moeingads/store/rabbit"
+	"github.com/zeniqsmart/ads-zeniq-smart-chain/ads"
+	"github.com/zeniqsmart/ads-zeniq-smart-chain/datatree"
+	"github.com/zeniqsmart/ads-zeniq-smart-chain/store"
+	"github.com/zeniqsmart/ads-zeniq-smart-chain/store/rabbit"
 )
 
 const (
@@ -208,7 +208,7 @@ func RunTx(numBlock int, txFile string) {
 	}()
 
 	fmt.Printf("Start %f\n", float64(time.Now().UnixNano())/1e9)
-	mads, err := moeingads.NewMoeingADS("./moeingads4test", false, [][]byte{GuardStart, GuardEnd})
+	mads, err := ads.NewADS("./ads4test", false, [][]byte{GuardStart, GuardEnd})
 	if err != nil {
 		panic(err)
 	}
@@ -245,12 +245,12 @@ func RunTx(numBlock int, txFile string) {
 	fmt.Printf("Finished %f\n", float64(time.Now().UnixNano())/1e9)
 	//fmt.Printf("phase1 time %d\n", Phase1Time)
 	//fmt.Printf("phase2 time %d\n", Phase2Time)
-	//fmt.Printf("moeingads.phase0 time %d\n", moeingads.Phase0Time)
-	//fmt.Printf("moeingads.pha1n2 time %d\n", moeingads.Phase1n2Time)
-	//fmt.Printf("moeingads.phase1 time %d\n", moeingads.Phase1Time)
-	//fmt.Printf("moeingads.phase2 time %d\n", moeingads.Phase2Time)
-	//fmt.Printf("moeingads.phase3 time %d\n", moeingads.Phase3Time)
-	//fmt.Printf("moeingads.phase4 time %d\n", moeingads.Phase4Time)
+	//fmt.Printf("ads.phase0 time %d\n", ads.Phase0Time)
+	//fmt.Printf("ads.pha1n2 time %d\n", ads.Phase1n2Time)
+	//fmt.Printf("ads.phase1 time %d\n", ads.Phase1Time)
+	//fmt.Printf("ads.phase2 time %d\n", ads.Phase2Time)
+	//fmt.Printf("ads.phase3 time %d\n", ads.Phase3Time)
+	//fmt.Printf("ads.phase4 time %d\n", ads.Phase4Time)
 	//mads.PrintMetaInfo()
 	root.Close()
 }
@@ -258,20 +258,20 @@ func RunTx(numBlock int, txFile string) {
 /*
 phase1 time 659216297850
 phase2 time 492814142134
-moeingads.phase0 time 0
-moeingads.pha1n2 time 244571442010
-moeingads.phase1 time 0
-moeingads.phase2 time 0
-moeingads.phase3 time 49584349112
-moeingads.phase4 time 143403222792
+ads.phase0 time 0
+ads.pha1n2 time 244571442010
+ads.phase1 time 0
+ads.phase2 time 0
+ads.phase3 time 49584349112
+ads.phase4 time 143403222792
 
 Finished 1594699845.963070
 phase1 time 1950429877590
 phase2 time 1731343352988
-moeingads.phase0 time 0
-moeingads.pha1n2 time 829604727502
-moeingads.phase1 time 0
-moeingads.phase2 time 0
-moeingads.phase3 time 328017075308
-moeingads.phase4 time 399895217040
+ads.phase0 time 0
+ads.pha1n2 time 829604727502
+ads.phase1 time 0
+ads.phase2 time 0
+ads.phase3 time 328017075308
+ads.phase4 time 399895217040
 */

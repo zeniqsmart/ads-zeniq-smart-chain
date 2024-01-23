@@ -1,4 +1,4 @@
-package moeingads
+package ads
 
 import (
 	"bytes"
@@ -14,10 +14,10 @@ import (
 	//"github.com/dterei/gotsc"
 	sha256 "github.com/minio/sha256-simd"
 
-	"github.com/zeniqsmart/moeingads/datatree"
-	"github.com/zeniqsmart/moeingads/indextree"
-	"github.com/zeniqsmart/moeingads/metadb"
-	"github.com/zeniqsmart/moeingads/types"
+	"github.com/zeniqsmart/ads-zeniq-smart-chain/datatree"
+	"github.com/zeniqsmart/ads-zeniq-smart-chain/indextree"
+	"github.com/zeniqsmart/ads-zeniq-smart-chain/metadb"
+	"github.com/zeniqsmart/ads-zeniq-smart-chain/types"
 )
 
 const (
@@ -35,7 +35,7 @@ const (
 var Phase1n2Time, Phase1Time, Phase2Time, Phase3Time, Phase4Time, Phase0Time uint64
 var NewOverOldFile *os.File = nil
 
-type MoeingADS struct {
+type ADS struct {
 	meta           types.MetaDB
 	idxTree        types.IndexTree
 	datTree        [types.ShardCount]types.DataTree
@@ -50,8 +50,8 @@ type MoeingADS struct {
 	idxTreeJobWG   sync.WaitGroup
 }
 
-func NewMoeingADS4Mock(startEndKeys [][]byte) *MoeingADS {
-	mads := &MoeingADS{
+func NewADS4Mock(startEndKeys [][]byte) *ADS {
+	mads := &ADS{
 		k2heMap:  NewBucketMap(repeat64(heMapSize)),
 		nkSet:    NewBucketSet(repeat64(nkSetSize)),
 		startKey: append([]byte{}, startEndKeys[0]...),
@@ -78,11 +78,11 @@ func NewMoeingADS4Mock(startEndKeys [][]byte) *MoeingADS {
 	return mads
 }
 
-func NewMoeingADS(dirName string, canQueryHistory bool, startEndKeys [][]byte) (*MoeingADS, error) {
+func NewADS(dirName string, canQueryHistory bool, startEndKeys [][]byte) (*ADS, error) {
 	//tscOverhead = gotsc.TSCOverhead()
 	_, err := os.Stat(dirName)
 	dirNotExists := os.IsNotExist(err)
-	mads := &MoeingADS{
+	mads := &ADS{
 		k2heMap:       NewBucketMap(repeat64(heMapSize)),
 		nkSet:         NewBucketSet(repeat64(nkSetSize)),
 		cachedEntries: make([]*HotEntry, 0, 2000),
@@ -159,7 +159,7 @@ func NewMoeingADS(dirName string, canQueryHistory bool, startEndKeys [][]byte) (
 	return mads, nil
 }
 
-func (mads *MoeingADS) initGuards() {
+func (mads *ADS) initGuards() {
 	mads.idxTree.BeginWrite(-1)
 	mads.meta.SetCurrHeight(-1)
 
@@ -198,7 +198,7 @@ func (mads *MoeingADS) initGuards() {
 	mads.rocksdb.OpenNewBatch()
 }
 
-func (mads *MoeingADS) recoverDataTrees(dirName string) {
+func (mads *ADS) recoverDataTrees(dirName string) {
 	datatree.ParallelRun(types.ShardCount, func(shardID int) {
 		oldestActiveTwigID := mads.meta.GetOldestActiveTwigID(shardID)
 		youngestTwigID := mads.meta.GetYoungestTwigID(shardID)
@@ -218,11 +218,11 @@ func (mads *MoeingADS) recoverDataTrees(dirName string) {
 	})
 }
 
-func (mads *MoeingADS) PrintMetaInfo() {
+func (mads *ADS) PrintMetaInfo() {
 	mads.meta.PrintInfo()
 }
 
-func (mads *MoeingADS) PrintIdxTree() {
+func (mads *ADS) PrintIdxTree() {
 	iter := mads.idxTree.Iterator(mads.startKey, mads.endKey)
 	defer iter.Close()
 	for iter.Valid() {
@@ -231,7 +231,7 @@ func (mads *MoeingADS) PrintIdxTree() {
 	}
 }
 
-func (mads *MoeingADS) Close() {
+func (mads *ADS) Close() {
 	mads.idxTree.Close()
 	mads.rocksdb.Close()
 	for i := 0; i < types.ShardCount; i++ {
@@ -249,7 +249,7 @@ func (mads *MoeingADS) Close() {
 type Entry = types.Entry
 type HotEntry = types.HotEntry
 
-func (mads *MoeingADS) GetRootHash() []byte {
+func (mads *ADS) GetRootHash() []byte {
 	var n8 [8][32]byte
 	var n4 [4][32]byte
 	var n2 [2][32]byte
@@ -266,7 +266,7 @@ func (mads *MoeingADS) GetRootHash() []byte {
 	return n1[:]
 }
 
-func (mads *MoeingADS) GetProof(k []byte) (entryBz, proofBz []byte, err error) {
+func (mads *ADS) GetProof(k []byte) (entryBz, proofBz []byte, err error) {
 	entry, entryBz := mads.getEntry(k, true /*forProof*/)
 	if entry != nil {
 		shardID := types.GetShardID(k)
@@ -276,12 +276,12 @@ func (mads *MoeingADS) GetProof(k []byte) (entryBz, proofBz []byte, err error) {
 	return nil, nil, errors.New("Cannot find entry")
 }
 
-func (mads *MoeingADS) GetEntry(k []byte) *Entry {
+func (mads *ADS) GetEntry(k []byte) *Entry {
 	entry, _ := mads.getEntry(k, false /*forProof*/)
 	return entry
 }
 
-func (mads *MoeingADS) GetEntryAtHeight(k []byte, height uint64) *Entry {
+func (mads *ADS) GetEntryAtHeight(k []byte, height uint64) *Entry {
 	pos, ok := mads.idxTree.GetAtHeight(k, height)
 	if !ok {
 		return nil
@@ -290,7 +290,7 @@ func (mads *MoeingADS) GetEntryAtHeight(k []byte, height uint64) *Entry {
 	return mads.datTree[shardID].ReadEntry(int64(pos))
 }
 
-func (mads *MoeingADS) getEntry(k []byte, forProof bool) (entry *Entry, entryBz []byte) {
+func (mads *ADS) getEntry(k []byte, forProof bool) (entry *Entry, entryBz []byte) {
 	pos, ok := mads.idxTree.Get(k)
 	if !ok {
 		return nil, nil
@@ -319,7 +319,7 @@ func isModified(hotEntry *HotEntry) bool {
 	return hotEntry.Operation == types.OpInsertOrChange && hotEntry.EntryPtr.SerialNum >= 0
 }
 
-func (mads *MoeingADS) PrepareForUpdate(k []byte) {
+func (mads *ADS) PrepareForUpdate(k []byte) {
 	pos, findIt := mads.idxTree.Get(k)
 	if findIt { // The case of Change
 		shardID := types.GetShardID(k)
@@ -353,7 +353,7 @@ func (mads *MoeingADS) PrepareForUpdate(k []byte) {
 	mads.nkSet.Store(string(prevEntry.NextKey))
 }
 
-func (mads *MoeingADS) PrepareForDeletion(k []byte) (findIt bool) {
+func (mads *ADS) PrepareForDeletion(k []byte) (findIt bool) {
 	pos, findIt := mads.idxTree.Get(k)
 	if !findIt {
 		return
@@ -392,7 +392,7 @@ func makeHintHotEntry(key string) *HotEntry {
 	}
 }
 
-func (mads *MoeingADS) getPrevEntry(k []byte) *Entry {
+func (mads *ADS) getPrevEntry(k []byte) *Entry {
 	iter := mads.idxTree.ReverseIterator(mads.startKey, k)
 	defer iter.Close()
 	if !iter.Valid() {
@@ -408,25 +408,25 @@ func (mads *MoeingADS) getPrevEntry(k []byte) *Entry {
 	return e
 }
 
-func (mads *MoeingADS) numOfKeptEntries() (sum int64) {
+func (mads *ADS) numOfKeptEntries() (sum int64) {
 	for i := 0; i < types.ShardCount; i++ {
 		sum += mads.meta.GetMaxSerialNum(i) - mads.meta.GetOldestActiveTwigID(i)*datatree.LeafCountInTwig
 	}
 	return
 }
 
-func (mads *MoeingADS) GetCurrHeight() int64 {
+func (mads *ADS) GetCurrHeight() int64 {
 	return mads.meta.GetCurrHeight()
 }
 
-func (mads *MoeingADS) BeginWrite(height int64) {
+func (mads *ADS) BeginWrite(height int64) {
 	mads.rocksdb.OpenNewBatch()
 	mads.idxTree.BeginWrite(height)
 	mads.meta.SetCurrHeight(height)
 }
 
 // Modify a KV pair. It is shard-safe
-func (mads *MoeingADS) Set(key, value []byte) {
+func (mads *ADS) Set(key, value []byte) {
 	hotEntry, ok := mads.k2heMap.Load(string(key))
 	if !ok {
 		panic(fmt.Sprintf("Can not find entry in cache, key=%#v", key))
@@ -444,7 +444,7 @@ func (mads *MoeingADS) Set(key, value []byte) {
 }
 
 // Delete a KV pair. It is shard-safe
-func (mads *MoeingADS) Delete(key []byte) {
+func (mads *ADS) Delete(key []byte) {
 	hotEntry, ok := mads.k2heMap.Load(string(key))
 	if !ok {
 		return // delete a non-exist kv pair
@@ -491,7 +491,7 @@ type idxTreeJob struct {
 	pos int64
 }
 
-func (mads *MoeingADS) runIdxTreeJobs() {
+func (mads *ADS) runIdxTreeJobs() {
 	mads.idxTreeJobWG.Add(len(mads.idxTreeJobChan))
 	for i := range mads.idxTreeJobChan {
 		go func(chanID int) {
@@ -511,14 +511,14 @@ func (mads *MoeingADS) runIdxTreeJobs() {
 	}
 }
 
-func (mads *MoeingADS) flushIdxTreeJobs() {
+func (mads *ADS) flushIdxTreeJobs() {
 	for i := range mads.idxTreeJobChan {
 		mads.idxTreeJobChan[i] <- idxTreeJob{key: nil} // end of job
 	}
 	mads.idxTreeJobWG.Wait()
 }
 
-func (mads *MoeingADS) update() {
+func (mads *ADS) update() {
 	sharedIdx := int64(-1)
 	datatree.ParallelRun(runtime.NumCPU(), func(_ int) {
 		for { // we dump data into tempEntries64 from k2heMap and nkSet, for sorting them
@@ -603,14 +603,14 @@ func (mads *MoeingADS) update() {
 	mads.flushIdxTreeJobs()
 }
 
-func (mads *MoeingADS) DeactiviateEntry(shardID int, sn int64) {
+func (mads *ADS) DeactiviateEntry(shardID int, sn int64) {
 	pendingDeactCount := mads.datTree[shardID].DeactiviateEntry(sn)
 	if pendingDeactCount > datatree.DeactivedSNListMaxLen {
 		mads.flushDeactivedSNList(shardID)
 	}
 }
 
-func (mads *MoeingADS) flushDeactivedSNList(shardID int) {
+func (mads *ADS) flushDeactivedSNList(shardID int) {
 	sn := mads.meta.GetMaxSerialNum(shardID)
 	mads.meta.IncrMaxSerialNum(shardID)
 	entry := datatree.DummyEntry(sn)
@@ -618,7 +618,7 @@ func (mads *MoeingADS) flushDeactivedSNList(shardID int) {
 	mads.datTree[shardID].AppendEntry(entry)
 }
 
-func (mads *MoeingADS) CheckConsistency() {
+func (mads *ADS) CheckConsistency() {
 	iter := mads.idxTree.ReverseIterator(mads.startKey, mads.endKey)
 	defer iter.Close()
 	nextKey := mads.endKey
@@ -636,7 +636,7 @@ func (mads *MoeingADS) CheckConsistency() {
 	}
 }
 
-func (mads *MoeingADS) ScanAll(fn func(key, value []byte)) {
+func (mads *ADS) ScanAll(fn func(key, value []byte)) {
 	iter := mads.idxTree.ReverseIterator(mads.startKey, mads.endKey)
 	defer iter.Close()
 	for iter.Valid() && !bytes.Equal(iter.Key(), mads.startKey) {
@@ -649,11 +649,11 @@ func (mads *MoeingADS) ScanAll(fn func(key, value []byte)) {
 	}
 }
 
-func (mads *MoeingADS) ActiveCount() int {
+func (mads *ADS) ActiveCount() int {
 	return mads.idxTree.ActiveCount()
 }
 
-func (mads *MoeingADS) compactForShard(shardID int) {
+func (mads *ADS) compactForShard(shardID int) {
 	twigID := mads.meta.GetOldestActiveTwigID(shardID)
 	if twigID+MinKeptTwigs > mads.meta.GetYoungestTwigID(shardID) {
 		return
@@ -677,7 +677,7 @@ func (mads *MoeingADS) compactForShard(shardID int) {
 	mads.meta.IncrOldestActiveTwigID(shardID)
 }
 
-func (mads *MoeingADS) allShardEndBlock() {
+func (mads *ADS) allShardEndBlock() {
 	for i := 0; i < types.ShardCount; i++ {
 		if mads.datTree[i].DeactivedSNListSize() != 0 {
 			mads.flushDeactivedSNList(i)
@@ -690,7 +690,7 @@ func (mads *MoeingADS) allShardEndBlock() {
 	}
 }
 
-func (mads *MoeingADS) EndWrite() {
+func (mads *ADS) EndWrite() {
 	mads.update()
 	activeCount := int64(mads.idxTree.ActiveCount())
 	for {
@@ -726,7 +726,7 @@ func (mads *MoeingADS) EndWrite() {
 	mads.rocksdb.CloseOldBatch()
 }
 
-func (mads *MoeingADS) PruneBeforeHeight(height int64) {
+func (mads *ADS) PruneBeforeHeight(height int64) {
 	var starts, ends [types.ShardCount]int64
 	datatree.ParallelRun(types.ShardCount, func(shardID int) {
 		start := mads.meta.GetLastPrunedTwig(shardID) + 1
@@ -757,7 +757,7 @@ func (mads *MoeingADS) PruneBeforeHeight(height int64) {
 	mads.rocksdb.SetPruneHeight(uint64(height))
 }
 
-func (mads *MoeingADS) CheckHashConsistency() {
+func (mads *ADS) CheckHashConsistency() {
 	for i := range mads.datTree {
 		tree, ok := mads.datTree[i].(*datatree.Tree)
 		if ok {

@@ -1,7 +1,7 @@
 package b
 
 import (
-	"github.com/zeniqsmart/moeingads/indextree/b/cppbtree"
+	"github.com/zeniqsmart/ads-zeniq-smart-chain/indextree/b/cppbtree"
 )
 
 type Enumerator = cppbtree.Enumerator

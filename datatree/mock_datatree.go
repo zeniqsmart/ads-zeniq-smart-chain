@@ -3,7 +3,7 @@ package datatree
 import (
 	"fmt"
 
-	"github.com/zeniqsmart/moeingads/types"
+	"github.com/zeniqsmart/ads-zeniq-smart-chain/types"
 )
 
 type MockTwig struct {

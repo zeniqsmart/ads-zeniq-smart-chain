@@ -16,11 +16,11 @@ import (
 	"github.com/dterei/gotsc"
 	sha256 "github.com/minio/sha256-simd"
 
-	"github.com/zeniqsmart/moeingads"
-	"github.com/zeniqsmart/moeingads/datatree"
-	"github.com/zeniqsmart/moeingads/store"
-	"github.com/zeniqsmart/moeingads/store/rabbit"
-	"github.com/zeniqsmart/moeingads/store/types"
+	"github.com/zeniqsmart/ads-zeniq-smart-chain/ads"
+	"github.com/zeniqsmart/ads-zeniq-smart-chain/datatree"
+	"github.com/zeniqsmart/ads-zeniq-smart-chain/store"
+	"github.com/zeniqsmart/ads-zeniq-smart-chain/store/rabbit"
+	"github.com/zeniqsmart/ads-zeniq-smart-chain/store/types"
 )
 
 var (
@@ -244,7 +244,7 @@ func RunGenerateAccounts(numAccounts int, randFilename string, jsonFile string) 
 
 	addr2num := make(map[[AddrLen]byte]uint64)
 	rs := randsrc.NewRandSrcFromFile(randFilename)
-	mads, err := moeingads.NewMoeingADS("./moeingads4test", false, [][]byte{GuardStart, GuardEnd})
+	mads, err := ads.NewADS("./ads4test", false, [][]byte{GuardStart, GuardEnd})
 	if err != nil {
 		panic(err)
 	}
@@ -294,12 +294,12 @@ func RunGenerateAccounts(numAccounts int, randFilename string, jsonFile string) 
 	//fmt.Printf("phase3 time %d\n", Phase3Time)
 	//fmt.Printf("phaseTrunk time %d\n", store.PhaseTrunkTime)
 	//fmt.Printf("phaseEndW time %d\n", store.PhaseEndWriteTime)
-	//fmt.Printf("moeingads.phase0 time %d\n", moeingads.Phase0Time)
-	//fmt.Printf("moeingads.pha1n2 time %d\n", moeingads.Phase1n2Time)
-	//fmt.Printf("moeingads.phase1 time %d\n", moeingads.Phase1Time)
-	//fmt.Printf("moeingads.phase2 time %d\n", moeingads.Phase2Time)
-	//fmt.Printf("moeingads.phase3 time %d\n", moeingads.Phase3Time)
-	//fmt.Printf("moeingads.phase4 time %d\n", moeingads.Phase4Time)
+	//fmt.Printf("ads.phase0 time %d\n", ads.Phase0Time)
+	//fmt.Printf("ads.pha1n2 time %d\n", ads.Phase1n2Time)
+	//fmt.Printf("ads.phase1 time %d\n", ads.Phase1Time)
+	//fmt.Printf("ads.phase2 time %d\n", ads.Phase2Time)
+	//fmt.Printf("ads.phase3 time %d\n", ads.Phase3Time)
+	//fmt.Printf("ads.phase4 time %d\n", ads.Phase4Time)
 	//fmt.Printf("dat.ph1 time %d\n", datatree.Phase1Time)
 	//fmt.Printf("dat.ph2 time %d\n", datatree.Phase2Time)
 	//fmt.Printf("dat.ph3 time %d\n", datatree.Phase3Time)

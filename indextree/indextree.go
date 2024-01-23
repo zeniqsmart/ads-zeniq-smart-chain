@@ -7,8 +7,8 @@ import (
 	"io"
 	"sync"
 
-	"github.com/zeniqsmart/moeingads/indextree/b"
-	"github.com/zeniqsmart/moeingads/types"
+	"github.com/zeniqsmart/ads-zeniq-smart-chain/indextree/b"
+	"github.com/zeniqsmart/ads-zeniq-smart-chain/types"
 )
 
 const (

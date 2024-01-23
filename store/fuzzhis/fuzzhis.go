@@ -12,11 +12,11 @@ import (
 
 	"github.com/coinexchain/randsrc"
 
-	"github.com/zeniqsmart/moeingads"
-	it "github.com/zeniqsmart/moeingads/indextree"
-	"github.com/zeniqsmart/moeingads/store"
-	"github.com/zeniqsmart/moeingads/store/rabbit"
-	"github.com/zeniqsmart/moeingads/types"
+	"github.com/zeniqsmart/ads-zeniq-smart-chain/ads"
+	it "github.com/zeniqsmart/ads-zeniq-smart-chain/indextree"
+	"github.com/zeniqsmart/ads-zeniq-smart-chain/store"
+	"github.com/zeniqsmart/ads-zeniq-smart-chain/store/rabbit"
+	"github.com/zeniqsmart/ads-zeniq-smart-chain/types"
 )
 
 type FuzzConfig struct {
@@ -131,7 +131,7 @@ func NewRoot(dir string) *store.RootStore {
 	for i := 0; i < 8; i++ {
 		end[i] = ^start[i]
 	}
-	mads, err := moeingads.NewMoeingADS(dir, true, [][]byte{start[:], end[:]})
+	mads, err := ads.NewADS(dir, true, [][]byte{start[:], end[:]})
 	if err != nil {
 		panic(err)
 	}
@@ -148,10 +148,10 @@ func getRandKey(numOfKeys int, rs randsrc.RandSrc) []byte {
 
 func RunFuzz(roundCount int, cfg FuzzConfig, randFilename string) {
 	os.RemoveAll("./RefHisDb.db")
-	os.RemoveAll("./MoeingADS.dir")
+	os.RemoveAll("./ADS.dir")
 	rs := randsrc.NewRandSrcFromFile(randFilename)
 	ref := NewRefHisDb("./RefHisDb")
-	root := NewRoot("./MoeingADS.dir")
+	root := NewRoot("./ADS.dir")
 
 	h := uint64(0)
 	fuzzChange(cfg.MaxNumOfKeys, cfg.InitCount, 0, ref, root, rs, h)
@@ -165,7 +165,7 @@ func RunFuzz(roundCount int, cfg FuzzConfig, randFilename string) {
 			ref.Close()
 			root.Close()
 			ref = NewRefHisDb("./RefHisDb")
-			root = NewRoot("./MoeingADS.dir")
+			root = NewRoot("./ADS.dir")
 			fmt.Printf("Reopen end \n")
 		}
 		//fmt.Printf("fuzzChange: \n")
@@ -176,7 +176,7 @@ func RunFuzz(roundCount int, cfg FuzzConfig, randFilename string) {
 	ref.Close()
 	root.Close()
 	os.RemoveAll("./RefHisDb.db")
-	os.RemoveAll("./MoeingADS.dir")
+	os.RemoveAll("./ADS.dir")
 }
 
 func fuzzChange(numOfKeys, setCount, delCount int, ref *RefHisDb, root *store.RootStore, rs randsrc.RandSrc, h uint64) {

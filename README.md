@@ -1,4 +1,4 @@
-# MoeingADS
-Authenticated Data Structure from  Moeing
+# ADS-zeniq-smart-chain
+Authenticated Data Structure for Zeniq Smart Chain
 
-![build workflow](https://github.com/zeniqsmart/moeingads/actions/workflows/main.yml/badge.svg)
+![build workflow](https://github.com/zeniqsmart/ads-zeniq-smart-chain/actions/workflows/main.yml/badge.svg)

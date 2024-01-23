@@ -1,4 +1,4 @@
-package moeingads
+package ads
 
 import (
 	"fmt"
@@ -63,7 +63,7 @@ func getListModify() []TestOp {
 	}
 }
 
-func runList(ads *MoeingADS, opList []TestOp, height int64) {
+func runList(ads *ADS, opList []TestOp, height int64) {
 	for _, op := range opList {
 		if op.isDel {
 			ads.PrepareForDeletion(op.key)
@@ -92,7 +92,7 @@ func EntryToStr(e *Entry) string {
 func Test1(t *testing.T) {
 	first := []byte{0, 0, 0, 0, 0, 0, 0, 0}
 	last := []byte{255, 255, 255, 255, 255, 255, 255, 255}
-	ads := NewMoeingADS4Mock([][]byte{first, last})
+	ads := NewADS4Mock([][]byte{first, last})
 	e := ads.GetEntry(first)
 	assert.Equal(t, "K:\x00\x00\x00\x00\x00\x00\x00\x00 nK:[]byte{0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff}(8) V: H:-1 LH:-1 SN:0", EntryToStr(e))
 	e = ads.GetEntry(last)

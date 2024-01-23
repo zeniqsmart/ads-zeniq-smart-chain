@@ -5,9 +5,9 @@ import (
 	"math"
 	"sync"
 
-	"github.com/zeniqsmart/moeingads"
-	"github.com/zeniqsmart/moeingads/store/types"
-	adstypes "github.com/zeniqsmart/moeingads/types"
+	"github.com/zeniqsmart/ads-zeniq-smart-chain/ads"
+	"github.com/zeniqsmart/ads-zeniq-smart-chain/store/types"
+	adstypes "github.com/zeniqsmart/ads-zeniq-smart-chain/types"
 )
 
 const (
@@ -19,13 +19,13 @@ type cacheEntry struct {
 	value  string
 }
 
-// RootStore wraps a cache and a moeingads.
+// RootStore wraps a cache and a ads.
 // This cache can hold written data from many blocks, and
 // when it reaches size limit, the older data are evicted out.
 // This cache is write-through, which means the data written
-// to it are also written to MoeingADS. When cache misses, we can
-// always fetch data from MoeingADS
-// A RWMutex protects MoeingADS and cache, making sure when data
+// to it are also written to ADS. When cache misses, we can
+// always fetch data from ADS
+// A RWMutex protects ADS and cache, making sure when data
 // are written to them, no read operation is permitted.
 type RootStore struct {
 	mtx sync.RWMutex
@@ -33,7 +33,7 @@ type RootStore struct {
 	cache [adstypes.ShardCount]map[string]cacheEntry
 	// controls which KVs can be cached, when this function is nil, all are cached.
 	isCacheableKey func(k []byte) bool
-	mads           *moeingads.MoeingADS
+	mads           *ads.ADS
 	// Current height. Each newly-added cache entry carries this value as an 'age-tag'.
 	// When entries are evicted, we try to find the oldest one (minimum height)
 	height int64
@@ -41,7 +41,7 @@ type RootStore struct {
 
 var _ types.RootStoreI = &RootStore{}
 
-func NewRootStore(mads *moeingads.MoeingADS, isCacheableKey func(k []byte) bool) *RootStore {
+func NewRootStore(mads *ads.ADS, isCacheableKey func(k []byte) bool) *RootStore {
 	result := &RootStore{
 		isCacheableKey: isCacheableKey,
 		mads:           mads,
@@ -149,7 +149,7 @@ func (root *RootStore) Update(updater func(db types.SetDeleter)) {
 
 func (root *RootStore) addToCache(key, value []byte) {
 	shardID := adstypes.GetShardID(key)
-	if len(root.cache[shardID]) > moeingads.RootCacheSizeLimit {
+	if len(root.cache[shardID]) > ads.RootCacheSizeLimit {
 		var delK string
 		delHeight := int64(math.MaxInt64)
 		dist := 0

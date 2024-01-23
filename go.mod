@@ -1,4 +1,4 @@
-module github.com/zeniqsmart/moeingads
+module github.com/zeniqsmart/ads-zeniq-smart-chain
 
 go 1.18
 

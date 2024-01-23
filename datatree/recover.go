@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"path/filepath"
 
-	"github.com/zeniqsmart/moeingads/types"
+	"github.com/zeniqsmart/ads-zeniq-smart-chain/types"
 )
 
 func EdgeNodesToBytes(edgeNodes []*EdgeNode) []byte {

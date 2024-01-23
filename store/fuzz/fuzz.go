@@ -10,14 +10,14 @@ import (
 
 	"github.com/coinexchain/randsrc"
 
-	"github.com/zeniqsmart/moeingads"
-	"github.com/zeniqsmart/moeingads/datatree"
-	"github.com/zeniqsmart/moeingads/store"
-	"github.com/zeniqsmart/moeingads/store/rabbit"
-	storetypes "github.com/zeniqsmart/moeingads/store/types"
+	"github.com/zeniqsmart/ads-zeniq-smart-chain/ads"
+	"github.com/zeniqsmart/ads-zeniq-smart-chain/datatree"
+	"github.com/zeniqsmart/ads-zeniq-smart-chain/store"
+	"github.com/zeniqsmart/ads-zeniq-smart-chain/store/rabbit"
+	storetypes "github.com/zeniqsmart/ads-zeniq-smart-chain/store/types"
 )
 
-// go test -tags debug -c -coverpkg github.com/zeniqsmart/moeingads/... .
+// go test -tags debug -c -coverpkg github.com/zeniqsmart/ads-zeniq-smart-chain/... .
 // RANDFILE=~/Downloads/goland-2019.1.3.dmg RANDCOUNT=2000 ./fuzz.test -test.coverprofile a.out
 
 func allTests() {
@@ -111,10 +111,10 @@ func runTest(cfg *FuzzConfig) {
 
 	rs := randsrc.NewRandSrcFromFileWithSeed(randFilename, []byte{0})
 	var root storetypes.RootStoreI
-	var mads *moeingads.MoeingADS
+	var mads *ads.ADS
 	initRootAndMads := func() {
 		var err error
-		mads, err = moeingads.NewMoeingADS("./moeingads4test", false, [][]byte{GuardStart, GuardEnd})
+		mads, err = ads.NewADS("./ads4test", false, [][]byte{GuardStart, GuardEnd})
 		if err != nil {
 			panic(err)
 		}
@@ -126,12 +126,12 @@ func runTest(cfg *FuzzConfig) {
 		root = store.NewMockRootStore()
 	} else if cfg.RootType == "MockDataTree" {
 		os.RemoveAll("./rocksdb.db")
-		mads := moeingads.NewMoeingADS4Mock([][]byte{GuardStart, GuardEnd})
+		mads := ads.NewADS4Mock([][]byte{GuardStart, GuardEnd})
 		root = store.NewRootStore(mads, func(k []byte) bool {
 			return k[0] > FirstByteOfCacheableKey
 		})
 	} else if cfg.RootType == "Real" {
-		os.RemoveAll("./moeingads4test")
+		os.RemoveAll("./ads4test")
 		initRootAndMads()
 	} else {
 		panic("Invalid RootType " + cfg.RootType)
@@ -170,7 +170,7 @@ func runTest(cfg *FuzzConfig) {
 	if cfg.RootType == "MockDataTree" {
 		os.RemoveAll("./rocksdb.db")
 	} else if cfg.RootType == "Real" {
-		os.RemoveAll("./moeingads4test")
+		os.RemoveAll("./ads4test")
 	}
 }
 
@@ -209,7 +209,7 @@ type Block struct {
 func getRandValue(rs randsrc.RandSrc, cfg *FuzzConfig) []byte {
 	length := 1 + int(rs.GetUint32())%(cfg.MaxValueLength-1)     //no zero-length value
 	if float32(rs.GetUint32()%0x10000)/float32(0x10000) < 0.15 { //some corner cases for large value
-		length = 1 + int(rs.GetUint32())%(moeingads.HPFileBufferSize/2)
+		length = 1 + int(rs.GetUint32())%(ads.HPFileBufferSize/2)
 	}
 	bz := rs.GetBytes(length)
 	if len(bz) < 16 {
@@ -358,7 +358,7 @@ func MyGet(rbt rabbit.RabbitStore, key []byte) []byte {
 	return res
 }
 
-func CheckTx(height, epochNum, txNum int, mads *moeingads.MoeingADS, rbt rabbit.RabbitStore, tx *Tx, cfg *FuzzConfig, blkSuc bool) {
+func CheckTx(height, epochNum, txNum int, mads *ads.ADS, rbt rabbit.RabbitStore, tx *Tx, cfg *FuzzConfig, blkSuc bool) {
 	for i, op := range tx.OpList {
 		if DBG {
 			fmt.Printf("Check %d-%d (%v) tx %d (%v) operation %d of %d\n", height, epochNum, blkSuc, txNum, tx.Succeed, i, len(tx.OpList))
@@ -389,7 +389,7 @@ func CheckTx(height, epochNum, txNum int, mads *moeingads.MoeingADS, rbt rabbit.
 	}
 }
 
-func ExecuteBlock(height int, mads *moeingads.MoeingADS, root storetypes.RootStoreI, block *Block, cfg *FuzzConfig, inParallel bool) (retry bool) {
+func ExecuteBlock(height int, mads *ads.ADS, root storetypes.RootStoreI, block *Block, cfg *FuzzConfig, inParallel bool) (retry bool) {
 	root.SetHeight(int64(height))
 	trunk := root.GetTrunkStore(1000).(*store.TrunkStore)
 	for i, epoch := range block.EpochList {
@@ -430,13 +430,13 @@ func ExecuteBlock(height int, mads *moeingads.MoeingADS, root storetypes.RootSto
 	defer func() {
 		if err := recover(); err != nil {
 			fmt.Printf("RECOVER %#v\n", err)
-			moeingads.DebugPanicNumber = 0
+			ads.DebugPanicNumber = 0
 			root.Close()
 			retry = true
 		}
 	}()
 	if block.PanicNumber != 0 {
-		moeingads.DebugPanicNumber = block.PanicNumber
+		ads.DebugPanicNumber = block.PanicNumber
 		block.PanicNumber = 0
 	}
 	trunk.Close(block.Succeed)

@@ -1,10 +1,10 @@
 //go:build !debug
 // +build !debug
 
-package moeingads
+package ads
 
 import (
-	"github.com/zeniqsmart/moeingads/datatree"
+	"github.com/zeniqsmart/ads-zeniq-smart-chain/datatree"
 )
 
 const (

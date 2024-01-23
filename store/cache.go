@@ -1,8 +1,8 @@
 package store
 
 import (
-	"github.com/zeniqsmart/moeingads/store/types"
-	adstypes "github.com/zeniqsmart/moeingads/types"
+	"github.com/zeniqsmart/ads-zeniq-smart-chain/store/types"
+	adstypes "github.com/zeniqsmart/ads-zeniq-smart-chain/types"
 )
 
 // CacheStore is used in two places: 1. as the temporal cache in TrunkStore,

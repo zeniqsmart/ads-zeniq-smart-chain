@@ -13,7 +13,7 @@ import (
 	sha256 "github.com/minio/sha256-simd"
 	"github.com/mmcloughlin/meow"
 
-	"github.com/zeniqsmart/moeingads/store/rabbit"
+	"github.com/zeniqsmart/ads-zeniq-smart-chain/store/rabbit"
 )
 
 const (
@@ -103,11 +103,6 @@ func GenerateTx(totalAccounts uint64, addr2num map[[AddrLen]byte]uint64, rs rand
 
 func RunGenerateTxFile(epochCount int, totalAccounts uint64, jsonFilename, randFilename, outFilename string) {
 	fmt.Printf("Start %f\n", float64(time.Now().UnixNano())/1e9)
-	//mads, err := moeingads.NewMoeingADS("./moeingads4test", false, [][]byte{GuardStart, GuardEnd})
-	//if err != nil {
-	//	panic(err)
-	//}
-	//root := store.NewRootStore(mads, nil, nil)
 
 	jsonFile, err := os.Open(jsonFilename)
 	if err != nil {

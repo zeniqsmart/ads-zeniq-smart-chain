@@ -1,7 +1,7 @@
 //go:build debug
 // +build debug
 
-package moeingads
+package ads
 
 const (
 	DefaultHPFileSize  int   = 64 * 1024 * 1024

@@ -7,8 +7,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/zeniqsmart/moeingads"
-	"github.com/zeniqsmart/moeingads/store/types"
+	"github.com/zeniqsmart/ads-zeniq-smart-chain/ads"
+	"github.com/zeniqsmart/ads-zeniq-smart-chain/store/types"
 )
 
 type Coord struct {
@@ -105,7 +105,7 @@ func getListDel() []TestOp {
 func TestTrunk(t *testing.T) {
 	first := []byte{0, 0, 0, 0, 0, 0, 0, 0}
 	last := []byte{255, 255, 255, 255, 255, 255, 255, 255}
-	mads := moeingads.NewMoeingADS4Mock([][]byte{first, last})
+	mads := ads.NewADS4Mock([][]byte{first, last})
 
 	root := NewRootStore(mads, func(k []byte) bool {
 		return k[0] != byte('0')

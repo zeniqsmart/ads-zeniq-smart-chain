@@ -15,10 +15,10 @@ import (
 	"github.com/dterei/gotsc"
 	sha256 "github.com/minio/sha256-simd"
 
-	"github.com/zeniqsmart/moeingads"
-	"github.com/zeniqsmart/moeingads/datatree"
-	"github.com/zeniqsmart/moeingads/store"
-	"github.com/zeniqsmart/moeingads/store/rabbit"
+	"github.com/zeniqsmart/ads-zeniq-smart-chain/ads"
+	"github.com/zeniqsmart/ads-zeniq-smart-chain/datatree"
+	"github.com/zeniqsmart/ads-zeniq-smart-chain/store"
+	"github.com/zeniqsmart/ads-zeniq-smart-chain/store/rabbit"
 )
 
 const (
@@ -96,7 +96,7 @@ func main() {
 	}
 
 	fmt.Printf("Before Start %d\n", time.Now().UnixNano())
-	mads, err := moeingads.NewMoeingADS("./moeingads4test", false, [][]byte{GuardStart, GuardEnd})
+	mads, err := ads.NewADS("./ads4test", false, [][]byte{GuardStart, GuardEnd})
 	if err != nil {
 		panic(err)
 	}
@@ -109,8 +109,8 @@ func main() {
 		RandomWrite(root, rs, kvCount)
 		fmt.Printf("Phase1: %d\n", Phase1Time)
 		fmt.Printf("Phase2: %d\n", Phase2Time)
-		fmt.Printf("Phase1: %d\n", moeingads.Phase1Time)
-		fmt.Printf("Phase2: %d\n", moeingads.Phase2Time)
+		fmt.Printf("Phase1: %d\n", ads.Phase1Time)
+		fmt.Printf("Phase2: %d\n", ads.Phase2Time)
 		fmt.Printf("Phase1: %d\n", datatree.Phase1Time)
 		fmt.Printf("Phase2: %d\n", datatree.Phase2Time)
 		return

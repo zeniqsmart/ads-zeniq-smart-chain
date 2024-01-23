@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/zeniqsmart/moeingads/store/types"
+	"github.com/zeniqsmart/ads-zeniq-smart-chain/store/types"
 )
 
 // MockRootStore mimics RootStore's behavior, with an in-memory CacheStore

@@ -5,9 +5,9 @@ import (
 
 	"github.com/dterei/gotsc"
 
-	"github.com/zeniqsmart/moeingads/datatree"
-	"github.com/zeniqsmart/moeingads/store/types"
-	adstypes "github.com/zeniqsmart/moeingads/types"
+	"github.com/zeniqsmart/ads-zeniq-smart-chain/datatree"
+	"github.com/zeniqsmart/ads-zeniq-smart-chain/store/types"
+	adstypes "github.com/zeniqsmart/ads-zeniq-smart-chain/types"
 )
 
 var PhaseTrunkTime, PhaseEndWriteTime, tscOverhead uint64 //nolint:unused
