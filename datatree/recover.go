@@ -52,7 +52,7 @@ func (tree *Tree) RecoverEntry(pos int64, entry *Entry, deactivedSNList []int64,
 	if string(entry.Key) == "dummy" {
 		tree.touchedPosOf512b[entry.SerialNum/512] = struct{}{}
 	} else {
-		tree.ActiviateEntry(entry.SerialNum)
+		tree.ActivateEntry(entry.SerialNum)
 	}
 	// record ChangeStart/ChangeEnd for endblock sync
 	position := int(entry.SerialNum & TwigMask)

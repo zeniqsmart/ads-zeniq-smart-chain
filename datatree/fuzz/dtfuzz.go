@@ -158,7 +158,7 @@ func (ctx *Context) step() {
 			//	fmt.Printf("Try to deactive %d %v\n", sn, ctx.tree.GetActiveBit(sn))
 			//}
 			if ctx.tree.GetActiveBit(sn) {
-				ctx.tree.DeactiviateEntry(sn)
+				ctx.tree.DeactivateEntry(sn)
 				ctx.activeCount--
 			}
 		}
@@ -168,7 +168,7 @@ func (ctx *Context) step() {
 		for i := 0; i < 4*datatree.DeactivedSNListMaxLen; i++ {
 			sn := ctx.generateRandSN()
 			if ctx.tree.GetActiveBit(sn) {
-				ctx.tree.DeactiviateEntry(sn)
+				ctx.tree.DeactivateEntry(sn)
 				ctx.activeCount--
 			}
 		}
@@ -268,7 +268,7 @@ func (ctx *Context) getRatio() float64 {
 //!! 				fmt.Printf("Why? sn=%d\n", sn)
 //!! 			}
 //!! 			if ctx.tree.GetActiveBit(sn) {
-//!! 				ctx.tree.DeactiviateEntry(sn)
+//!! 				ctx.tree.DeactivateEntry(sn)
 //!! 				//entry.SerialNum = ctx.serialNum
 //!! 				//ctx.tree.AppendEntry(entry)
 //!! 				bz := datatree.EntryToBytes(*entry, nil)
@@ -317,7 +317,7 @@ func (ctx *Context) pruneTree() {
 				fmt.Printf("Why? sn=%d\n", sn)
 			}
 			if ctx.tree.GetActiveBit(sn) {
-				ctx.tree.DeactiviateEntry(sn)
+				ctx.tree.DeactivateEntry(sn)
 				//!! fmt.Printf("Fuck0 %#v\n", entryBz)
 				datatree.UpdateSerialNum(entryBz, ctx.serialNum)
 				//!! fmt.Printf("Fuck1 %#v\n", entryBz)

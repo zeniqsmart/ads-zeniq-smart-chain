@@ -300,7 +300,7 @@ func flipActiveBitsEveryN(tree *Tree, n int64) {
 	end := (1 + tree.youngestTwigID) * LeafCountInTwig
 	for i := int64(0); i < end; i += n {
 		active := tree.GetActiveBit(i)
-		tree.setEntryActiviation(i, !active)
+		tree.setEntryActivation(i, !active)
 	}
 }
 
@@ -461,7 +461,7 @@ func buildTestTree(dirName string, deactSNList []int64, countBefore, countAfter 
 		posList = append(posList, tree.AppendEntry(entry))
 	}
 	for _, sn := range deactSNList {
-		tree.DeactiviateEntry(sn)
+		tree.DeactivateEntry(sn)
 	}
 
 	entry.SerialNum = int64(countBefore)

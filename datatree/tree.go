@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"sort"
+	"sync"
 	"sync/atomic"
 
 	"github.com/dterei/gotsc"
@@ -68,6 +69,7 @@ type Twig struct {
 	leftRoot       [32]byte
 	twigRoot       [32]byte
 	FirstEntryPos  int64
+	m              sync.RWMutex
 }
 
 var Phase1Time, Phase2Time, Phase3Time, tscOverhead uint64 //nolint:unused
@@ -155,7 +157,9 @@ func (twig *Twig) setBit(offset int) {
 	}
 	mask := byte(1) << (offset & 0x7)
 	pos := offset >> 3
+	twig.m.Lock()
 	twig.activeBits[pos] |= mask
+	twig.m.Unlock()
 }
 func (twig *Twig) clearBit(offset int) {
 	if offset < 0 || offset > LeafCountInTwig {
@@ -163,7 +167,9 @@ func (twig *Twig) clearBit(offset int) {
 	}
 	mask := byte(1) << (offset & 0x7)
 	pos := offset >> 3
+	twig.m.Lock()
 	twig.activeBits[pos] &= ^mask
+	twig.m.Unlock()
 }
 func (twig *Twig) getBit(offset int) bool {
 	if offset < 0 || offset > LeafCountInTwig {
@@ -171,7 +177,10 @@ func (twig *Twig) getBit(offset int) bool {
 	}
 	mask := byte(1) << (offset & 0x7)
 	pos := offset >> 3
-	return (twig.activeBits[pos] & mask) != 0
+	twig.m.RLock()
+	res := (twig.activeBits[pos] & mask) != 0
+	twig.m.RUnlock()
+	return res
 }
 
 type NodePos int64
@@ -294,7 +303,7 @@ func (tree *Tree) GetActiveBit(sn int64) bool {
 	return twig.getBit(int(sn & TwigMask))
 }
 
-func (tree *Tree) setEntryActiviation(sn int64, active bool) {
+func (tree *Tree) setEntryActivation(sn int64, active bool) {
 	twigID := sn >> TwigShift
 	if active {
 		tree.activeTwigs[twigID].setBit(int(sn & TwigMask))
@@ -309,12 +318,12 @@ func (tree *Tree) setEntryActiviation(sn int64, active bool) {
 	tree.touchedPosOf512b[sn/512] = struct{}{}
 }
 
-func (tree *Tree) ActiviateEntry(sn int64) {
-	tree.setEntryActiviation(sn, true)
+func (tree *Tree) ActivateEntry(sn int64) {
+	tree.setEntryActivation(sn, true)
 }
 
-func (tree *Tree) DeactiviateEntry(sn int64) int {
-	tree.setEntryActiviation(sn, false)
+func (tree *Tree) DeactivateEntry(sn int64) int {
+	tree.setEntryActivation(sn, false)
 	return len(tree.deactivedSNList)
 }
 
@@ -330,7 +339,7 @@ func (tree *Tree) AppendEntry(entry *Entry) int64 {
 	if len(entry.Key) == 5 && string(entry.Key) == "dummy" {
 		tree.touchedPosOf512b[entry.SerialNum/512] = struct{}{}
 	} else {
-		tree.ActiviateEntry(entry.SerialNum)
+		tree.ActivateEntry(entry.SerialNum)
 	}
 	return tree.appendEntry([2][]byte{bz, nil}, entry.SerialNum)
 }
@@ -341,7 +350,7 @@ func (tree *Tree) AppendEntryRawBytes(entryBz []byte, sn int64) int64 {
 	bz := SNListToBytes(tree.deactivedSNList)
 	tree.deactivedSNList = tree.deactivedSNList[:0] // clear its content
 	// mark this entry as valid
-	tree.ActiviateEntry(sn)
+	tree.ActivateEntry(sn)
 	return tree.appendEntry([2][]byte{entryBz, bz}, sn)
 }
 

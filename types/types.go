@@ -87,7 +87,7 @@ type IndexTree interface {
 type EntryHandler func(pos int64, entry *Entry, deactivedSNList []int64)
 
 type DataTree interface {
-	DeactiviateEntry(sn int64) int
+	DeactivateEntry(sn int64) int
 	AppendEntry(entry *Entry) int64
 	AppendEntryRawBytes(entryBz []byte, sn int64) int64
 	ReadEntry(pos int64) *Entry

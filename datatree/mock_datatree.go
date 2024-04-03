@@ -23,8 +23,8 @@ func NewMockDataTree() *MockDataTree {
 	return tree
 }
 
-func (dt *MockDataTree) DeactiviateEntry(sn int64) int {
-	//fmt.Printf("Here DataTree.DeactiviateEntry(sn=%d)\n", sn)
+func (dt *MockDataTree) DeactivateEntry(sn int64) int {
+	//fmt.Printf("Here DataTree.DeactivateEntry(sn=%d)\n", sn)
 	twigID := sn >> TwigShift
 	dt.twigs[twigID].activeBits[sn&TwigMask] = false
 	return 0

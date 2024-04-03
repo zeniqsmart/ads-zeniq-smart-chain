@@ -585,11 +585,11 @@ func (mads *ADS) update() {
 			chanID := types.GetIndexChanID(ptr.Key[0])
 			if hotEntry.Operation == types.OpDelete && ptr.SerialNum >= 0 {
 				// if ptr.SerialNum==-1, then we are deleting a just-inserted value, so ignore it.
-				mads.DeactiviateEntry(shardID, ptr.SerialNum)
+				mads.DeactivateEntry(shardID, ptr.SerialNum)
 				mads.idxTreeJobChan[chanID] <- idxTreeJob{key: ptr.Key, pos: -1} //delete
 			} else if hotEntry.Operation != types.OpNone || hotEntry.IsTouchedByNext {
 				if ptr.SerialNum >= 0 { // if this entry already exists
-					mads.DeactiviateEntry(shardID, ptr.SerialNum)
+					mads.DeactivateEntry(shardID, ptr.SerialNum)
 				}
 				ptr.LastHeight = ptr.Height
 				ptr.Height = mads.meta.GetCurrHeight()
@@ -603,8 +603,8 @@ func (mads *ADS) update() {
 	mads.flushIdxTreeJobs()
 }
 
-func (mads *ADS) DeactiviateEntry(shardID int, sn int64) {
-	pendingDeactCount := mads.datTree[shardID].DeactiviateEntry(sn)
+func (mads *ADS) DeactivateEntry(shardID int, sn int64) {
+	pendingDeactCount := mads.datTree[shardID].DeactivateEntry(sn)
 	if pendingDeactCount > datatree.DeactivedSNListMaxLen {
 		mads.flushDeactivedSNList(shardID)
 	}
@@ -614,7 +614,7 @@ func (mads *ADS) flushDeactivedSNList(shardID int) {
 	sn := mads.meta.GetMaxSerialNum(shardID)
 	mads.meta.IncrMaxSerialNum(shardID)
 	entry := datatree.DummyEntry(sn)
-	mads.datTree[shardID].DeactiviateEntry(sn)
+	mads.datTree[shardID].DeactivateEntry(sn)
 	mads.datTree[shardID].AppendEntry(entry)
 }
 
@@ -661,7 +661,7 @@ func (mads *ADS) compactForShard(shardID int) {
 	entryBzChan := mads.datTree[shardID].GetActiveEntriesInTwig(twigID)
 	for entryBz := range entryBzChan {
 		sn := datatree.ExtractSerialNum(entryBz)
-		mads.DeactiviateEntry(shardID, sn)
+		mads.DeactivateEntry(shardID, sn)
 		sn = mads.meta.GetMaxSerialNum(shardID)
 		datatree.UpdateSerialNum(entryBz, sn)
 		mads.meta.IncrMaxSerialNum(shardID)
